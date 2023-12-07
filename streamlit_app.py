@@ -1,59 +1,3 @@
-# # https://docs.streamlit.io/knowledge-base/tutorials/llm-quickstart
-
-
-# # import streamlit as st
-# # from langchain.llms import OpenAI
-
-# # # st.title('🦜🔗 Quickstart App')
-# # st.title('🦜🔗 Code Generation App')
-
-
-# # # openai_api_key = st.sidebar.text_input('OpenAI API Key', type='password')
-# # openai_api_key = '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'
-# # # openai key : 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
-
-# # def generate_response(input_text):
-# #     llm = OpenAI(temperature=0.1, openai_api_key=openai_api_key)
-# #     st.info(llm(input_text))
-
-# # with st.form('my_form'):
-# #     text = st.text_area('Enter the product specs:', '')
-# #     submitted = st.form_submit_button('Submit')
-# #     if not openai_api_key.startswith('sk-'):
-# #         st.warning('Please enter your OpenAI API key!', icon='⚠')
-# #     if submitted and openai_api_key.startswith('sk-'):
-# #         generate_response(text)
-
-# import streamlit as st
-# from langchain.llms import OpenAI
-
-# st.title('🦜🔗 Code Generation App')
-
-# openai_api_key = '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'
-
-# def generate_response(input_text):
-#     # Update the prompt to instruct the model to generate complete Python code with imports
-#     prompt = f"Generate a complete and proper Python code with the required imports based on the product specs:\n\n{input_text}"
-    
-#     llm = OpenAI(temperature=0.1, openai_api_key=openai_api_key)
-#     response = llm(prompt)
-    
-#     # Modify this part to format the output as Python code
-#     formatted_code = response
-    
-#     st.code(formatted_code, language='python')
-
-# with st.form('my_form'):
-#     text = st.text_area('Enter the product specs:', '')
-#     submitted = st.form_submit_button('Submit')
-    
-#     if not openai_api_key.startswith('sk-'):
-#         st.warning('Please enter your OpenAI API key!', icon='⚠')
-        
-#     if submitted and openai_api_key.startswith('sk-'):
-#         generate_response(text)
-###############################################################################3
-
 from openai import OpenAI
 import streamlit as st
 import fitz  # PyMuPDF for PDF extraction
@@ -118,9 +62,7 @@ if execute_document_upload:
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.chat_message("assistant").write(msg)
 
-execute_document_upload = False
 # Allow the user to provide additional input without document upload
-# st.title("")
 if prompt := st.chat_input():
     # Only include the latest user input and the latest assistant response
     client = OpenAI(api_key=openai_api_key)

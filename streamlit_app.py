@@ -1,0 +1,136 @@
+# # https://docs.streamlit.io/knowledge-base/tutorials/llm-quickstart
+
+
+# # import streamlit as st
+# # from langchain.llms import OpenAI
+
+# # # st.title('🦜🔗 Quickstart App')
+# # st.title('🦜🔗 Code Generation App')
+
+
+# # # openai_api_key = st.sidebar.text_input('OpenAI API Key', type='password')
+# # openai_api_key = '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'
+# # # openai key : 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
+
+# # def generate_response(input_text):
+# #     llm = OpenAI(temperature=0.1, openai_api_key=openai_api_key)
+# #     st.info(llm(input_text))
+
+# # with st.form('my_form'):
+# #     text = st.text_area('Enter the product specs:', '')
+# #     submitted = st.form_submit_button('Submit')
+# #     if not openai_api_key.startswith('sk-'):
+# #         st.warning('Please enter your OpenAI API key!', icon='⚠')
+# #     if submitted and openai_api_key.startswith('sk-'):
+# #         generate_response(text)
+
+# import streamlit as st
+# from langchain.llms import OpenAI
+
+# st.title('🦜🔗 Code Generation App')
+
+# openai_api_key = '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'
+
+# def generate_response(input_text):
+#     # Update the prompt to instruct the model to generate complete Python code with imports
+#     prompt = f"Generate a complete and proper Python code with the required imports based on the product specs:\n\n{input_text}"
+    
+#     llm = OpenAI(temperature=0.1, openai_api_key=openai_api_key)
+#     response = llm(prompt)
+    
+#     # Modify this part to format the output as Python code
+#     formatted_code = response
+    
+#     st.code(formatted_code, language='python')
+
+# with st.form('my_form'):
+#     text = st.text_area('Enter the product specs:', '')
+#     submitted = st.form_submit_button('Submit')
+    
+#     if not openai_api_key.startswith('sk-'):
+#         st.warning('Please enter your OpenAI API key!', icon='⚠')
+        
+#     if submitted and openai_api_key.startswith('sk-'):
+#         generate_response(text)
+###############################################################################3
+
+from openai import OpenAI
+import streamlit as st
+import fitz  # PyMuPDF for PDF extraction
+from docx import Document  # python-docx for DOC extraction
+import os
+import tempfile
+
+openai_api_key = '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'
+
+st.title("💬 Code Generation Chatbot")
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+    st.session_state["document_content"] = ""
+
+for msg in st.session_state.messages:
+    st.chat_message(msg["role"]).write(msg["content"])
+
+execute_document_upload = True  # Flag to determine whether to execute document upload section
+
+if execute_document_upload:
+    static_prompt = "Generate Python code based on the extracted text from the document: "
+    st.write(static_prompt)
+
+    uploaded_file = st.file_uploader("Upload a PDF or DOC document", type=["pdf", "doc", "docx"])
+
+    if uploaded_file is not None:
+        content = ""
+        file_type = uploaded_file.name.split(".")[-1].lower()
+
+        # Save the uploaded file to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{file_type}") as temp_file:
+            temp_file.write(uploaded_file.read())
+            temp_file_path = temp_file.name
+
+        if file_type == "pdf":
+            pdf_document = fitz.open(temp_file_path)
+            for page_num in range(pdf_document.page_count):
+                page = pdf_document.load_page(page_num)
+                content += page.get_text()
+        elif file_type in ["doc", "docx"]:
+            doc = Document(temp_file_path)
+            for paragraph in doc.paragraphs:
+                content += paragraph.text
+
+        # Remove the temporary file
+        os.remove(temp_file_path)
+
+        st.session_state["document_content"] = content
+
+        user_input = f"{static_prompt}{content}"
+
+        if not openai_api_key:
+            st.info("Please add your OpenAI API key to continue.")
+            st.stop()
+
+        client = OpenAI(api_key=openai_api_key)
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        st.chat_message("user").write(user_input)
+        response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
+        msg = response.choices[0].message.content
+        st.session_state.messages.append({"role": "assistant", "content": msg})
+        st.chat_message("assistant").write(msg)
+
+execute_document_upload = False
+# Allow the user to provide additional input without document upload
+# st.title("")
+if prompt := st.chat_input():
+    # Only include the latest user input and the latest assistant response
+    client = OpenAI(api_key=openai_api_key)
+    st.session_state.messages = [{"role": "user", "content": prompt}]  # Clear previous messages
+
+    if st.session_state["document_content"]:
+        st.session_state.messages[0]["content"] = prompt
+        st.chat_message("user").write(st.session_state.messages[0]["content"])
+
+    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
+    msg = response.choices[0].message.content
+    st.session_state.messages.append({"role": "assistant", "content": msg})
+    st.chat_message("assistant").write(msg)

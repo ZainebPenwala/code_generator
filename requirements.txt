@@ -1,5 +1,5 @@
 streamlit
 openai
 langchain
-PyMuPDFb
+PyMuPDFb==1.16.14
 python-docx==1.1.0

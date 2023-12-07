@@ -1,3 +1,4 @@
 streamlit
 openai
-langchain
+langchain\
+PyMuPDFb==1.23.7

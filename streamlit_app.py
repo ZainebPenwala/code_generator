@@ -5,7 +5,7 @@ from docx import Document  # python-docx for DOC extraction
 import os
 import tempfile
 
-openai_api_key = ''
+openai_api_key =  st.secrets["openai_api_key"]
 
 st.title("💬 Code Generation Chatbot")
 

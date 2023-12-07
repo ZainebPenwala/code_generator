@@ -34,7 +34,8 @@ if execute_document_upload:
             temp_file_path = temp_file.name
 
         if file_type == "pdf":
-            pdf_document = fitz.open(temp_file_path)
+            # pdf_document = fitz.open(temp_file_path)
+            pdf_document = fitz.open(stream=mem_area, filetype="pdf")
             for page_num in range(pdf_document.page_count):
                 page = pdf_document.load_page(page_num)
                 content += page.get_text()

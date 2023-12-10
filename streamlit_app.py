@@ -31,7 +31,7 @@ if execute_document_upload:
     # static_prompt = "Generate Python code based on the extracted text from the document: "
     static_prompt = "Generate a complete Python code, including proper imports, functions, docstrings, and comments, based on the given specifications. Display it in a pythonic form inside a code block: "
 
-    st.write(static_prompt)
+    # st.write(static_prompt)
 
     uploaded_file = st.file_uploader("Upload a PDF or DOC document", type=["pdf", "doc", "docx"])
 

@@ -65,7 +65,7 @@ if execute_document_upload:
         st.chat_message("user").write(user_input)
 
         client = OpenAI(api_key=openai_api_key)
-        response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
+        response = client.chat.completions.create(model="gpt-4-1106-preview", messages=st.session_state.messages)
         new_message = response.choices[0].message.content
 
         st.session_state.messages.append({"role": "assistant", "content": new_message})
